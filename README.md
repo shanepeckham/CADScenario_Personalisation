@@ -341,6 +341,16 @@ Next add your Logic App endpoint that you copied into the value field and click 
 
 Now we can navigate to the Logic App to see if our chat bot sent it a request - go back to the Runs History in the 'Overview' section. Inspect the Request Body again - you should now have your chat bot and your web site set up to interact directly with the Logic App. Note: The 'preferredLanguage' value in your Request Body will now hold the first value to entered in the chat bot.
 
+#### Now we want to detect the language that the customer engaged with the chat bot on
+
+We now want to add an action after the request step to start processing what request - this will be a step to detect the language in the preferredLanguage field. Select 'Add an action', see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/logicapp2.png)
+
+Search for the word 'Detect', this should return the option to select the 'Text Analytics - Detect Language' connector.  Note you will need to have your key ready that you got when you signed up for the Text Analytics preview as part of the pre-requisites, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/detectlang.png)
+
 
 
 
