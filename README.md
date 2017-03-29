@@ -56,6 +56,7 @@ For this Lab you will require:
 * A Gmail account for sending emails, get it here - https://accounts.google.com/SignUp?service=mail&continue=http%3A%2F%2Fmail.google.com%2Fmail%2Fe-11-14a952576b5f2ffe90ec0dd9823744e0-46a962fbb7947b68059374ddde7f29b5490a6b4d
 * Install Postman for REST API troubleshooting, get it here - https://www.getpostman.com
 * If using Windows 10 get Bash for Windows - https://msdn.microsoft.com/en-us/commandline/wsl/install_guide or putty if on an older version - http://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+* A github account, sign up here - https://github.com/join?source=header-home
 
 # How to install the solution
 
@@ -204,11 +205,15 @@ Navigate back to your Resource Group and select your provisioned eCommerce websi
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webcoffee1.png)
 
-This will open a new page and start up your Java eCommerce site. Have a look around, you can order 1 of 4 coffees but we have not yet wired up the web site to the ordering process, we will do this in the hands-on Lab component. See below:
+This will open a new page and start up your Java eCommerce site. Have a look around, you can order 1 of 4 coffees but we have not yet wired up the web site to the ordering process, we will do this in the hands-on Lab component. The Web site requires an application setting called 'logicAppURL' with the value of the Logic App endpoint which we will create in the hands-on Lab component.
+
+See below:
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webcoffee1.png)
 
 ## 6. Activate the Bot Service and check the code has deployed
+
+CAVEAT: At the time of writing the Bot Service is still in preview and is therefore prone to all manner of stability issues and unpredictability.
 
 Navigate back to your Resource Group and select your provisioned Bot Service App Service App, it will have a default name of commcombot3[hash]. Now select it and you will be navigated to the setup screen where you will register the Bot App Id so that it can be added to other channels if required, see below:
 
@@ -240,25 +245,44 @@ This will open a blade on the right which will display the status of the deploym
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup7.png)
 
+When your Bot has finished deploying, you should be able to go back to the code view and see.
+Like the coffee website, the chat bot requires an application setting called logicAppURL that maps to the endpoint of the Logic app that will be created in the hands-n Lab component.
 
 
 
-
-
-
-
+# The hands-on Lab component
 
 ## SPOILER ALERT - this is the full solution, so only look here if you get stuck!
 
-We want to get the customer's details, find their last associated case and then check the feedback against it.
-
 ### The data model
 
-See the diagram below for the simplistic data model to help you query the right data.
+Both the website and the chat bot will take a customer order and provide us with a json request like the following:
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/DemoDataModel.jpg)
+```
+{   "emailAddress": "bobby@turtlenecksweater.com",
+    "preferredLanguage": "French",
+    "product": "Latte",
+    "total", "$3,45"
+}
+```
+### Registering a Logic App endpoint with the website and the chat bot
 
-Create a HTTP Request Step, click save - you will receive an endpoint upon save. 
+Create a new Logic App within your Resource Group, click Edit.
+
+The first thing we want to do is create a HTTP Request-Response Step, click save - you will receive an endpoint upon save - copy this value, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/logicreqresp.png)
+
+Select 'Use this template'
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/logicresprep2.png)
+
+Now click Save and copy the endpoint
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/copylogicurl.png)
+
+
+
 
 Select the Request step, see below:
 
