@@ -245,10 +245,15 @@ This will open a blade on the right which will display the status of the deploym
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup7.png)
 
-When your Bot has finished deploying, you should be able to go back to the code view and see.
+Now click on the latest commit, it will open another blade with a 'Redeploy' button, select it. See below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup8.png)
+
+If you navigate back to the code view you should now see the first question "What is your email address?" with the chat emulator loaded to the left. See below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup9.png)
+
 Like the coffee website, the chat bot requires an application setting called logicAppURL that maps to the endpoint of the Logic app that will be created in the hands-n Lab component.
-
-
 
 # The hands-on Lab component
 
