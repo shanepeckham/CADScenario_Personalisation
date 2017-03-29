@@ -489,9 +489,9 @@ Now we just add the values we want to send:
 
 Let's also return the order number to the Bot in the response step, we can get this from the function output:
 ```
- "Response": {
+"Response": {
                 "inputs": {
-                    "body": "Order number: @body('AddNewCustomerOrder')['orderId']",
+                    "body": "Order:@{body('AddNewCustomerOrder')['orderId']}",
                     "statusCode": 200
                 },
                 "runAfter": {
@@ -506,285 +506,74 @@ Let's also return the order number to the Bot in the response step, we can get t
             },
 ```
 
-![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/orderresp.png)
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/orderresp2.png)
 
+#### Full run through of solution
 
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/full1.png)
 
-
-
-
- 
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Navigating back to the designer should show your values resolved like below:
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/querycontactsbyid.png)
-
-Now you need to query the Legacy Ticket API (Contacts Case List API) which is inside the isolated network to get the last case for that customer and retrieve the customer's feedback on the case. From the demo model hint above you want to use the caseNum field from the QueryContactsById to query the Legacy Ticket API field primary key field CaseId.
-
-Add an API Management API step, select the Contact Case List API and once again query by Id, which in this CaseId which maps to the caseNum output from the previous step and add the API Management subscription key.
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/querycasesbyid.png)
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/querycasesselectidmethod.png)
-
-Ensure you select the correct outputs from the previous step(s) as inputs to this step, see below:
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/querycasebycasenum.png)
-
-Now if you applied the logic from the previous step to select the correct outut field values (which would be a sensible approach) you will probably get the following error:
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/querycaseserror.png)
-
-This is due to us outputting an array but not specifying which record/index we want to use. Change the following line from
+Query the legacy database:
 ```
-"id": "@{encodeURIComponent(body('QueryContactsById')?['caseNum'])}"
-```
-to use the first value of the array, namely the 0 index:
-
-```
-  "id": "@{encodeURIComponent(body('QueryContactsById')[0]['caseNum'])}"
+mysql -u root -pMiniCAD123
+use mysql;
+select * from customers;
 ```
 
-Here is what your code view should look like for this step:
+To check the orders
 ```
-            "QueryCasesById": {
-                "inputs": {
-                    "api": {
-                        "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/[ResourceGroup]/providers/Microsoft.ApiManagement/service/cadapimxdb3o43h6p7bq/apis/58cd5516dc78ac0f84da1289"
-                    },
-                    "method": "get",
-                    "pathTemplate": {
-                        "parameters": {
-                            "id": "@{encodeURIComponent(body('QueryContactsById')[0]['caseNum'])}"
-                        },
-                        "template": "/LegacyAPI/contacts/{id}"
-                    },
-                    "subscriptionKey": "@{triggerBody()['APIMKey']}"
-                },
-                "runAfter": {
-                    "QueryContactsById": [
-                        "Succeeded"
-                    ]
-                },
-                "type": "ApiManagement"
-            },
+select * from orders;
 ```
 
-Now we want to add our Cognitive Services 'Detect Sentiment' (note you will need to have your key ready that you got when you signed up for the Text Analytics preview as part of the pre-requisites) step  so that we can analyse the sentiment of the Ticket Feedback:
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/full2.png)
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/searchdetect.png)
+Check the email:
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/selectsentiment.png)
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/full2.png)
 
-We now need to make sure we send the correct output from the QueryCasesById step to the Detect Sentiment step, use the javascript dot notation approach again with an index value. Your steps should look like this:
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/lastfeedback.png)
-
-Your code view should look like this:
-```
-            "Detect_Sentiment": {
-                "inputs": {
-                    "body": {
-                        "text": "@{body('QueryCasesById')?['last_feedback']}"
-                    },
-                    "host": {
-                        "api": {
-                            "runtimeUrl": "https://logic-apis-northeurope.azure-apim.net/apim/cognitiveservicestextanalytics"
-                        },
-                        "connection": {
-                            "name": "@parameters('$connections')['cognitiveservicestextanalytics']['connectionId']"
-                        }
-                    },
-                    "method": "post",
-                    "path": "/sentiment"
-                },
-                "runAfter": {
-                    "QueryCasesById": [
-                        "Succeeded"
-                    ]
-                },
-                "type": "ApiConnection"
-            },
+### Full logic app code
 ```
 
-Now we want to add a condition to check the sentiment, if the probability outcome is less than 0.5, then it negative sentiment and therefore qualifies for our discount coupon.
-
-Your condition should look like this:
-
-![alt text](https://github.com/shanepeckham/CADHackathon_Loyalty/blob/master/Images/Condition.jpg)
-
-With the following in code view:
-```
-"expression": "@less(body('Detect_Sentiment')?['score'], 0.5)",
-                        "runAfter": {
-                            "Detect_Sentiment": [
-                                "Succeeded"
-                            ]
-                        },
-                        "type": "If"
-
-```
-
-Now you can call the GenerateCoupon function if the condition is met, pass in the name of the user that you want to generate the digital coupon for:
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/ifcondition0.png)
-
-With the following in the code view:
-```
-"GenerateCoupon": {
-                        "inputs": {
-                            "body": {
-                                "name": "@body('QueryContactsById')[0]['name']"
-                            },
-                            "function": {
-                                "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/NewLoyaltyPlan/providers/Microsoft.Web/sites/CADFuncxdb3o43h6p7bq/functions/GenerateCoupon"
-                            }
-                        },
-                        "runAfter": {},
-                        "type": "Function"
-                    }
-                },
-```
-Now we want to send an email to every receipient to inform them that they can download a digital coupon which we have generated for them.
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/selectgmail.png)
-
-Your email step should look like this:
-
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/sendemail.png)
-
-With the following code view:
-```
-                    "Send_email": {
-                        "inputs": {
-                            "body": {
-                                "Body": "Please accept this coupon: @{body('GenerateCoupon')}",
-                                "Subject": "We heard that you were not happy",
-                                "To": "@{body('QueryContactsById')[0]['email']}"
-                            },
-                            "host": {
-                                "api": {
-                                    "runtimeUrl": "https://logic-apis-northeurope.azure-apim.net/apim/gmail"
-                                },
-                                "connection": {
-                                    "name": "@parameters('$connections')['gmail']['connectionId']"
-                                }
-                            },
-                            "method": "post",
-                            "path": "/Mail"
-                        },
-                        "runAfter": {
-                            "GenerateCoupon": [
-                                "Succeeded"
-                            ]
-                        },
-                        "type": "ApiConnection"
-                    }
-```
-
-The full code solution view looks like this:
-```
 {
     "$connections": {
         "value": {
             "cognitiveservicestextanalytics": {
-                "connectionId": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/NewLoyaltyPlan/providers/Microsoft.Web/connections/cognitiveservicestextanalytics",
+                "connectionId": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/resourceGroups/Person2/providers/Microsoft.Web/connections/cognitiveservicestextanalytics",
                 "connectionName": "cognitiveservicestextanalytics",
-                "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/providers/Microsoft.Web/locations/northeurope/managedApis/cognitiveservicestextanalytics"
+                "id": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/providers/Microsoft.Web/locations/northeurope/managedApis/cognitiveservicestextanalytics"
             },
             "gmail": {
-                "connectionId": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/NewLoyaltyPlan/providers/Microsoft.Web/connections/gmail",
-                "connectionName": "gmail",
-                "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/providers/Microsoft.Web/locations/northeurope/managedApis/gmail"
+                "connectionId": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/resourceGroups/Person2/providers/Microsoft.Web/connections/gmail-6",
+                "connectionName": "gmail-6",
+                "id": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/providers/Microsoft.Web/locations/northeurope/managedApis/gmail"
+            },
+            "microsofttranslator": {
+                "connectionId": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/resourceGroups/Person2/providers/Microsoft.Web/connections/microsofttranslator",
+                "connectionName": "microsofttranslator",
+                "id": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/providers/Microsoft.Web/locations/northeurope/managedApis/microsofttranslator"
             }
         }
     },
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "Condition": {
-                "actions": {
-                    "GenerateCoupon": {
-                        "inputs": {
-                            "body": {
-                                "name": "@body('QueryContactsById')[0]['name']"
-                            },
-                            "function": {
-                                "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/NewLoyaltyPlan/providers/Microsoft.Web/sites/CADFuncxdb3o43h6p7bq/functions/GenerateCoupon"
-                            }
-                        },
-                        "runAfter": {},
-                        "type": "Function"
-                    },
-                    "Send_email": {
-                        "inputs": {
-                            "body": {
-                                "Body": "Please accept this coupon: @{body('GenerateCoupon')}",
-                                "Subject": "We heard that you were not happy",
-                                "To": "@{body('QueryContactsById')[0]['email']}"
-                            },
-                            "host": {
-                                "api": {
-                                    "runtimeUrl": "https://logic-apis-northeurope.azure-apim.net/apim/gmail"
-                                },
-                                "connection": {
-                                    "name": "@parameters('$connections')['gmail']['connectionId']"
-                                }
-                            },
-                            "method": "post",
-                            "path": "/Mail"
-                        },
-                        "runAfter": {
-                            "GenerateCoupon": [
-                                "Succeeded"
-                            ]
-                        },
-                        "type": "ApiConnection"
+            "AddNewCustomerOrder": {
+                "inputs": {
+                    "body": "@body('Parse_JSON')",
+                    "function": {
+                        "id": "/subscriptions/fe7c62c4-42d3-48d0-ae16-a50426e96dae/resourceGroups/Person2/providers/Microsoft.Web/sites/commSQLcubrn5ay2k2vk/functions/AddNewCustomerOrder"
                     }
                 },
-                "expression": "@less(body('Detect_Sentiment')?['score'], 0.5)",
                 "runAfter": {
-                    "Detect_Sentiment": [
+                    "Parse_JSON": [
                         "Succeeded"
                     ]
                 },
-                "type": "If"
+                "type": "Function"
             },
-            "Detect_Sentiment": {
+            "Detect_Language": {
                 "inputs": {
                     "body": {
-                        "text": "@{body('QueryCasesById')?['last_feedback']}"
+                        "text": "@{triggerBody()['preferredLanguage']}"
                     },
                     "host": {
                         "api": {
@@ -795,52 +584,109 @@ The full code solution view looks like this:
                         }
                     },
                     "method": "post",
-                    "path": "/sentiment"
+                    "path": "/languages"
+                },
+                "runAfter": {},
+                "type": "ApiConnection"
+            },
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "{'emailAddress': '@{triggerBody()['emailAddress']}' , 'product': '@{triggerBody()['coffeeType']}' , 'total': '@{triggerBody()['total']}' , 'preferredLanguage': '@{body('Detect_Language')?['detectedLanguages'][0]['name']}'}",
+                    "schema": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "emailAddress": {
+                                "type": "string"
+                            },
+                            "preferredLanguage": {
+                                "type": "string"
+                            },
+                            "product": {
+                                "type": "string"
+                            },
+                            "total": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "emailAddress",
+                            "total",
+                            "product",
+                            "preferredLanguage"
+                        ],
+                        "type": "object"
+                    }
                 },
                 "runAfter": {
-                    "QueryCasesById": [
+                    "Detect_Language": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Response": {
+                "inputs": {
+                    "body": "Order:@{body('AddNewCustomerOrder')['orderId']}",
+                    "statusCode": 200
+                },
+                "runAfter": {
+                    "Send_email": [
+                        "Succeeded"
+                    ],
+                    "Translate_text": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Response"
+            },
+            "Send_email": {
+                "inputs": {
+                    "body": {
+                        "Body": "@{body('Translate_text')}",
+                        "Subject": "CoffeeBot",
+                        "To": "@{body('Parse_JSON')['emailAddress']}"
+                    },
+                    "host": {
+                        "api": {
+                            "runtimeUrl": "https://logic-apis-northeurope.azure-apim.net/apim/gmail"
+                        },
+                        "connection": {
+                            "name": "@parameters('$connections')['gmail']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Mail"
+                },
+                "runAfter": {
+                    "Translate_text": [
                         "Succeeded"
                     ]
                 },
                 "type": "ApiConnection"
             },
-            "QueryCasesById": {
+            "Translate_text": {
                 "inputs": {
-                    "api": {
-                        "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/NewLoyaltyPlan/providers/Microsoft.ApiManagement/service/cadapimxdb3o43h6p7bq/apis/58cd5516dc78ac0f84da1289"
+                    "host": {
+                        "api": {
+                            "runtimeUrl": "https://logic-apis-northeurope.azure-apim.net/apim/microsofttranslator"
+                        },
+                        "connection": {
+                            "name": "@parameters('$connections')['microsofttranslator']['connectionId']"
+                        }
                     },
                     "method": "get",
-                    "pathTemplate": {
-                        "parameters": {
-                            "id": "@{encodeURIComponent(body('QueryContactsById')[0]['caseNum'])}"
-                        },
-                        "template": "/LegacyAPI/contacts/{id}"
-                    },
-                    "subscriptionKey": "@{triggerBody()['APIMKey']}"
+                    "path": "/Translate",
+                    "queries": {
+                        "languageTo": "@{body('Detect_Language')?['detectedLanguages'][0]['iso6391Name']}",
+                        "query": "\"query\": \"Thank you for shopping at our coffee store. Your last order was a @{body('Parse_JSON')['product']} and your preferred language is @{body('Parse_JSON')['preferredLanguage']}\""
+                    }
                 },
                 "runAfter": {
-                    "QueryContactsById": [
+                    "AddNewCustomerOrder": [
                         "Succeeded"
                     ]
                 },
-                "type": "ApiManagement"
-            },
-            "QueryContactsById": {
-                "inputs": {
-                    "api": {
-                        "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/NewLoyaltyPlan/providers/Microsoft.ApiManagement/service/cadapimxdb3o43h6p7bq/apis/58cd4c45dc78ac0f84da1287"
-                    },
-                    "method": "get",
-                    "pathTemplate": {
-                        "parameters": {
-                            "id": "@{encodeURIComponent(triggerBody()['id'])}"
-                        },
-                        "template": "/Contacts/contacts/{id}"
-                    },
-                    "subscriptionKey": "@{triggerBody()['APIMKey']}"
-                },
-                "runAfter": {},
-                "type": "ApiManagement"
+                "type": "ApiConnection"
             }
         },
         "contentVersion": "1.0.0.0",
@@ -852,7 +698,7 @@ The full code solution view looks like this:
             }
         },
         "triggers": {
-            "manual": {
+            "request": {
                 "inputs": {
                     "schema": {}
                 },
@@ -864,12 +710,33 @@ The full code solution view looks like this:
 }
 
 ```
-# Troubleshooting
+ 
+ 
 
-If you get and 'Internal Server Error' 500 on the Contact Case List (Legacy Ticket API) this could be because the node API has stopped. ssh into the VM and navigate to the /LegacyAPI/CADContacts folder and run 'node server.js'. 
-e.g.
 
-```cd LegacyAPI 
-cd CADContacts
-node server.js
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
