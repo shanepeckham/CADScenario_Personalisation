@@ -170,27 +170,55 @@ In the console type ``` tcpping 10.1.0.4:3306 ``` You should get a successful co
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/functionsetup8.png)
 
 
-## 6. Import Function Storage hooks
+## 5. Check the eCommerce website is up and running and serving customers
 
-Click on the Deploy button below.
+Navigate back to your Resource Group and select your provisioned eCommerce website, it will have a default name of commcoffee[hash]. Now select Browse, see below:
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fshanepeckham%2FCADHackathon_Loyalty%2Fmaster%2Fazuredeployfunctionsettings.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webcoffee1.png)
 
-NB - Make sure you use the same Deployment Name as you did in Step 1.
+This will open a new page and start up your Java eCommerce site. Have a look around, you can order 1 of 4 coffees but we have not yet wired up the web site to the ordering process, we will do this in the hands-on Lab component. See below:
 
-You can test the function in the test harness within the function app itself, add this to the Request body:
-```
-{ "name": "hello" }
-```
-You should see the output look something like this:
-```
-{"couponUrl":"https://cadfuncstorrvhyzok7zv4gw.blob.core.windows.net/coupons/%5Bobject%20Object%5D.jpg?st=2017-03-14T20%3A27%3A59Z&se=2017-03-14T21%3A27%3A59Z&sp=r&sv=2015-12-11&sr=b&sig=6UUHFHY08JihUU8vT%2Fus%2Fot9Pl%2BZud6jaakMNTuCFZc%3D"} Status 200 Ok
-```
-Note, if you get an error upon first invocation, run it again and it should work. You are now ready to build the logic app.
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webcoffee1.png)
 
-# The Logic App solution
+## 6. Activate the Bot Service and check the code has deployed
+
+Navigate back to your Resource Group and select your provisioned Bot Service App Service App, it will have a default name of commcombot3[hash]. Now select it and you will be navigated to the setup screen where you will register the Bot App Id so that it can be added to other channels if required, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup1.png)
+
+Click 'Create Microsoft App Id and Password'. This will open up a new window where you will register your Bot App Id. Select 'Generate an app password to continue', see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup2.png)
+
+This will open up a popup with your password in, copy this value for immediate reuse. Note, it only appears this once. Click 'Finish and go back to Bot Framework'. Paste your password in the entry box.
+
+Now select 'NodeJS' in the Choose a Language section and select 'Basic' in the Choose a Template section (at the time of writing this a necessary step even though our code will overwrite these settings) and click 'Create Bot', see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup3.png)
+
+This will take roughly 2-3 minutes, once complete you will be navigated to the code view of the Bot. If all has provisioned correctly you will see the status 'Edit continuous integration'. Click on settings to check the status of the code deploy, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup4.png)
+
+Now click on the 'Edit' dropdown on the right of the screen in the Continuous Integration section, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup5.png)
+
+This will open the Continuous Integration menu. Here you can see the status of the code deploy, see below. Select the Configure Continuous Integration button. 
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup6.png)
+
+This will open a blade on the right which will display the status of the deployment source and latest commit, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsetup7.png)
+
+
+
+
+
+
+
+
 
 ## SPOILER ALERT - this is the full solution, so only look here if you get stuck!
 
