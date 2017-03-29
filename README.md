@@ -169,6 +169,34 @@ In the console type ``` tcpping 10.1.0.4:3306 ``` You should get a successful co
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/functionsetup8.png)
 
+Now we can go test a method to check whether all is working as planned. Navigate back to the code view of the Function and select method 'GetCustomer'. Expand the menu on the right of the page to gain access to the test pane, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/functionsetup9.png)
+
+Select the Test item and enter the following in the 'Request Body' section and select run, see below:
+
+```
+{ "customerId": "1" }
+```
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/functionsetup10.png)
+
+You should see the result "bobby@turtlenecksweater.com" in the logs below if successful, you might get an error as illustrated below upon first invocation but if you run it again the error should not appear again.
+```
+2017-03-29T12:45:49.621 Retrieving a single customer
+2017-03-29T12:45:54.595 SELECT * FROM customers where customerId = "1"
+2017-03-29T12:45:54.627 Function completed (Failure, Id=88f13e38-3867-4f0c-a6aa-d29e1330b309)
+2017-03-29T12:45:54.646 Script for function 'GetCustomer' changed. Reloading.
+2017-03-29T12:45:54.783 RowDataPacket {
+  customerId: 1,
+  emailAddress: 'bobby@turtlenecksweater.com',
+  preferredLanguage: 'English' }
+2017-03-29T12:45:54.955 Exception while executing function: Functions.GetCustomer. mscorlib: ReferenceError: res is not defined
+    at module.exports (D:\home\site\wwwroot\GetCustomer\index.js:28:24)
+    at D:\Program Files (x86)\SiteExtensions\Functions\1.0.10841\bin\azurefunctions\functions.js:93:24.
+```
+When you run it again you should see the following, if successful:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/functionsetup11.png)
 
 ## 5. Check the eCommerce website is up and running and serving customers
 
