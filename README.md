@@ -423,7 +423,7 @@ Now comes the tricky bit, we will need to go into the code view to go and formul
 
 You can now run another test to see if your parse json conforms to the schema. Once it does you are ready to now pass the new json message to the Serverless proxy to pass to the legacy database. 
 
-Note, the Logic App designer will state that the json is invalid while the code view will think it is valid, it this happens ensure that you always click save in the code view whenever you make a change! See below:
+Note, the Logic App designer will state that the json is invalid while the code view will think it is valid, if this happens ensure that you always click save in the code view whenever you make a change! See below:
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/parseJson.png)
 
@@ -439,13 +439,74 @@ This will now register the user in our database alongside their preferred langua
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/translate.png)
 
-Now as inputs you want to send it the preferredLanguage contents again and the target language. 
+Now as inputs you want to send it the preferredLanguage contents again and the target language. Let's try it:
 
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/badtranslate.png)
 
+I get a 502 as a response in my chat.
 
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/502.png)
 
+We can see the error in the Run History of the logic app:
 
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/badtempl.png)
 
+The problem is that the Target language is expecting the language ISO code, we can see that we have this from the Detect Language step. Let's use that instead, but its an array so we need to ensure we select an index. This is what my code view looks like for this step:
+```
+"Translate_text": {
+                "inputs": {
+                    "host": {
+                        "api": {
+                            "runtimeUrl": "https://logic-apis-northeurope.azure-apim.net/apim/microsofttranslator"
+                        },
+                        "connection": {
+                            "name": "@parameters('$connections')['microsofttranslator']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/Translate",
+                    "queries": {
+                        "languageTo": "@{body('Detect_Language')?['detectedLanguages'][0]['iso6391Name']}",
+                        "query": "\"query\": \"Thank you for shopping at our coffee store. Your last order was a @{body('Parse_JSON')['product']} and your preferred language is @{body('Parse_JSON')['preferredLanguage']}\""
+                    }
+                },
+                "runAfter": {
+                    "AddNewCustomerOrder": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            }
+```
+
+Now let's send this order confirmation to the customer's email address in their preferred language. We will use the Gmail connector.
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/gmail.png)
+
+Now we just add the values we want to send:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/mailcom.png)
+
+Let's also return the order number to the Bot in the response step, we can get this from the function output:
+```
+ "Response": {
+                "inputs": {
+                    "body": "Order number: @body('AddNewCustomerOrder')['orderId']",
+                    "statusCode": 200
+                },
+                "runAfter": {
+                    "Send_email": [
+                        "Succeeded"
+                    ],
+                    "Translate_text": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Response"
+            },
+```
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/orderresp.png)
 
 
 
