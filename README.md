@@ -1,23 +1,22 @@
-# CADScenario_Personalisation
-# *CAD Customer Loyalty Business Scenario Lab*
+# *CAD Customer Personalisation Business Scenario Lab*
 
 # What is it?
 
 This repository will provision an environment that may be used as a Lab to build an end to end scenario that does the following:
 
-*	Query a Contact List API for a customer
-*	Query our legacy on-prem Ticket system to get the customer’s last feedback
-*	Perform sentiment analysis on this feedback
-*	Generate a digital discount coupon if they were dissatisfied
-*	Mail them the coupon
+*	Place an online order on an eCommerce web site
+*   Place an order with a chatbot running on an Azure Bot Service web site
+*	Query and create orders on our legacy on-prem Order system 
+*	Detect the language that the customer engages with Bot Service on
+*	Mail the user with order confirmations and follow ups in their preferred language
 
 # What does it showcase?
 
-This solution brings together Infrastructure as a Service (IaaS), Platform as a Service (PaaS), Software as a Service (SaaS) and Serverless components on Microsoft Azure to build a realistic end to end scenario to nurture customers. Furthermore, the democratization of AI is tied in nicely by incorporating Cognitive Services to perform text analysis and determine the sentiment of a customer’s feedback.
+This solution brings together Infrastructure as a Service (IaaS), Platform as a Service (PaaS), Software as a Service (SaaS) and Serverless components on Microsoft Azure to build a realistic end to end scenario to nurture customers. Furthermore, the democratization of AI is tied in by incorporating Cognitive Services to perform language detection and dynamic translation.
 
 # The end to end scenario
 
-This solution will query a customer datastore, then get the last support case associated with a customer from a different datastore, check the sentiment/satisfaction of the customer's last feedback and generate a digital discount coupon for them if their sentiment is determined to be dissatisfied. The coupon will then be emailed to the customer to redeem. 
+This solution will allow a customer to place an order for a coffee in a multi-channel online store, via website or a chat bot. The language that the user engages with the chat bot on will be determined and stored as personal preferences against the user's record in a locked down legacy database. Future correspondence and order confirmations will be in the customer's preferred communication language.
 
 # The solution aims to show the following:
 
@@ -31,12 +30,13 @@ This solution will query a customer datastore, then get the last support case as
 
 The following technology components are used in this solution:
 
-*	Swagger enabled Node.js APIs running on Azure App Services (PaaS)
-*	Ubuntu with a custom extension template to rapidly provision and deploy a custom image with a running legacy mysql solution (IaaS) [Thanks Justin Davies for helping here](https://github.com/juda-ms)
+*	eCommerce online store built with Java running on Azure App Services (PaaS)
+*	Ubuntu running a legacy mysql database (IaaS) 
 *	Azure networking to isolate legacy workloads (IaaS)
-*	API Management to govern APIs and to bridge publicly accessible APIs with isolated APIs (SaaS) (IaaS)
-*	Azure functions to run dynamic ‘pay-as-you-go’ compute (Serverless) [Thanks Christof Claasens and Katrien de Graeve for the generate coupon function](https://github.com/xstof/Quiz) 
+*   Azure virtual network Gateway to provide point to site connectivity
+*	Serverless components to serve as a proxy between the IaaS legacy database and the PaaS layer (Serverless)
 *	Azure logic apps to provide serverless integration that is accessible to non-developers (Serveless)
+*   Microsoft Cognitive Services to detect language and translation in real time
 *	Azure Resource Manager templates to automate the provisioning and inflation of a full environment
 
 # Solution flow
