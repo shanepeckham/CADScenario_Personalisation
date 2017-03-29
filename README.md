@@ -20,9 +20,9 @@ This solution will allow a customer to place an order for a coffee in a multi-ch
 
 # The solution aims to show the following:
 
-*	How legacy lift and shift applications on IaaS can be incorporated into modern solutions to quickly derive value from higher value services in the cloud.
-*	How existing investments can be modernized without having to rebuild everything to drive customer value
-*	The ease with which On-premise, public and private components may be brought together to build workloads that bring business value
+*	How legacy lift and shift applications on IaaS can be incorporated into modern solutions to quickly derive value from       higher value services in the cloud. 
+*	How non-API enabled legacy workloads can be modernised.
+*	The ease with which On-premise, public and private components may be brought together to build workloads that bring         business value
 *	The meshing of IaaS, PaaS, SaaS, Serverless and AI with tools that are accessible to non-developers
 *	OSS workloads running on Azure
 
