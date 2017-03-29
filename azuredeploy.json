@@ -1,0 +1,640 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deploymentName": {
+            "defaultValue": "eCommerce",
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "northeurope",
+            "type": "string"
+        },
+        "virtualMachines_ecommvm_name": {
+            "defaultValue": "commvmmmm",
+            "type": "string"
+        },
+        "virtualMachines_ecommvm_adminPassword": {
+            "defaultValue": "MiniCADAdmin123",
+            "type": "securestring"
+        },
+        "components_CADeCommBot_name": {
+            "defaultValue": "CADCommBot3yja643",
+            "type": "string"
+        },
+          "serverfarms_CADCommAPIFarm": {
+            "defaultValue": "CADcommfarm",
+            "type": "string"
+        },
+        "networkInterfaces_ecommvm_name": {
+            "defaultValue": "commvmmmm712",
+            "type": "string"
+        },
+        "networkSecurityGroups_commvm_nsg_name": {
+            "defaultValue": "commvmmmm-nsg",
+            "type": "string"
+        },
+        "publicIPAddresses_ecommvm_ip_name": {
+            "defaultValue": "commvmmmm-ip",
+            "type": "string"
+        },
+        "publicIPAddresses_legacycommVNET_ip_name": {
+            "defaultValue": "legacycommVNET-ip",
+            "type": "string"
+        },
+        "virtualNetworks_legacycommVNET_name": {
+            "defaultValue": "legacycommVNET",
+            "type": "string"
+        },
+        "storageAccounts_cadcommbot_name": {
+            "defaultValue": "cadcommbot",
+            "type": "string"
+        },
+        "storageAccounts_ecommfunc_name": {
+            "defaultValue": "cfunstor",
+            "type": "string"
+        },
+        "serverfarms_ecommname": {
+            "defaultValue": "NorthEuropePlan",
+            "type": "string"
+        },
+        "sites_commfunc_name": {
+            "defaultValue": "commSQL",
+            "type": "string"
+        },
+        "sites_CADCommBot_name": {
+            "defaultValue": "CADCommBot3",
+            "type": "string"
+        },
+        "sites_commcoffeeapp_name": {
+            "defaultValue": "commcoffeeapp",
+            "type": "string"
+        },
+        "sites_commeapi_name": {
+            "defaultValue": "commeapi",
+            "type": "string"
+        },
+        "virtual_network_gateway": {
+            "defaultValue": "commVNG",
+            "type": "string"
+        },
+        "storageAccounts_vhddisk_name": {
+            "defaultValue": "commvhd",
+            "type": "string"
+        },
+        "coffee_repoURL": {
+            "type": "string",
+            "defaultValue": "https://github.com/shanepeckham/CADCoffee.git",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        },
+        "coffee_branch": {
+            "type": "string",
+            "defaultValue": "master",
+            "metadata": {
+                "description": "The branch of the GitHub repository to use."
+            }
+        },
+        "bot_repoURL": {
+            "type": "string",
+            "defaultValue": "https://github.com/shanepeckham/CADCoffeeBot.git",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        },
+        "bot_branch": {
+            "type": "string",
+            "defaultValue": "master",
+            "metadata": {
+                "description": "The branch of the GitHub repository to use."
+            }
+        },
+        "function_repoURL": {
+            "type": "string",
+            "defaultValue": "https://github.com/shanepeckham/CADeCommerceFunction.git",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        },
+        "function_branch": {
+            "type": "string",
+            "defaultValue": "master",
+            "metadata": {
+                "description": "The branch of the GitHub repository to use."
+            }
+        }
+    },
+    "variables": {
+        "virtualMachines_ecommvm_name": "[concat(parameters('virtualMachines_ecommvm_name'), uniqueString(parameters('deploymentName')))]",
+        "components_CADeCommBot_name": "[concat(parameters('components_CADeCommBot_name'), uniqueString(parameters('deploymentName')))]",
+        "networkInterfaces_ecommvm_name": "[concat(parameters('networkInterfaces_ecommvm_name'), uniqueString(parameters('deploymentName')))]",
+        "networkSecurityGroups_commvm_nsg_name": "[concat(parameters('networkSecurityGroups_commvm_nsg_name'), uniqueString(parameters('deploymentName')))]",
+        "publicIPAddresses_ecommvm_ip_name": "[concat(parameters('publicIPAddresses_ecommvm_ip_name'), uniqueString(parameters('deploymentName')))]",
+        "publicIPAddresses_legacycommVNET_ip_name": "[concat(parameters('publicIPAddresses_legacycommVNET_ip_name'), uniqueString(parameters('deploymentName')))]",
+        "virtualNetworks_legacycommVNET_name": "[tolower(concat(parameters('virtualNetworks_legacycommVNET_name'), uniqueString(parameters('deploymentName'))))]",
+        "storageAccounts_cadcommbot_name": "[concat(parameters('storageAccounts_cadcommbot_name'), uniqueString(parameters('deploymentName')))]",
+        "storageAccounts_ecommfunc_name": "[concat(parameters('storageAccounts_ecommfunc_name'), uniqueString(parameters('deploymentName')))]",
+        "serverfarms_ecommname": "[concat(parameters('serverfarms_ecommname'), uniqueString(parameters('deploymentName')))]",
+        "sites_commfunc_name": "[concat(parameters('sites_commfunc_name'), uniqueString(parameters('deploymentName')))]",
+        "sites_CADCommBot_name": "[concat(parameters('sites_CADCommBot_name'), uniqueString(parameters('deploymentName')))]",
+        "sites_commcoffeeapp_name": "[concat(parameters('sites_commcoffeeapp_name'), uniqueString(parameters('deploymentName')))]",
+        "sites_commeapi_name": "[concat(parameters('sites_commeapi_name'), uniqueString(parameters('deploymentName')))]",
+        "virtual_network_gateway": "[concat(parameters('virtual_network_gateway'), uniqueString(parameters('deploymentName')))]",
+        "storageAccounts_vhddisk_name": "[concat(parameters('storageAccounts_vhddisk_name'), uniqueString(parameters('deploymentName')))]",
+        "serverfarms_CADCommAPIFarm": "[concat(parameters('serverfarms_CADCommAPIFarm'), uniqueString(parameters('deploymentName')))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('virtual_network_gateway')]",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "apiVersion": "2016-09-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {
+                "ipConfigurations": [
+                {
+                    "properties": {
+                    "privateIPAllocationMethod": null,
+                    "subnet": {
+                        "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', toLower(variables('virtualNetworks_legacycommVNET_name'))), '/subnets/GatewaySubnet')]"
+                    },
+                    "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddresses_legacycommVNET_ip_name'))]"
+                    }
+                    },
+                    "name": "[concat(toLower(variables('virtualNetworks_legacycommVNET_name')), 'ipconfig')]"
+                }
+                ],
+                "gatewayType": "Vpn",
+                "vpnType": "RouteBased",
+                "enableBgp": false,
+                "activeActive": false,
+                "vpnClientConfiguration": {
+                "vpnClientAddressPool": {
+                    "addressPrefixes": [
+                    "172.16.0.0/16"
+                    ]
+                }
+                },
+                "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks_legacycommVNET_name'))]"
+            ]
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[variables('storageAccounts_vhddisk_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('virtualMachines_ecommvm_name')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "16.04-LTS",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[variables('virtualMachines_ecommvm_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', variables('storageAccounts_vhddisk_name'), '.blob.core.windows.net', concat('/vhds/', variables('virtualMachines_ecommvm_name'),'20170323122905.vhd'))]" 
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[variables('virtualMachines_ecommvm_name')]",
+                    "adminUsername": "MiniCADAdmin",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": [],
+                    "adminPassword": "[parameters('virtualMachines_ecommvm_adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaces_ecommvm_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaces_ecommvm_name'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_vhddisk_name'))]"
+            ]
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('networkInterfaces_ecommvm_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.1.0.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddresses_ecommvm_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks_legacycommVNET_name')), '/subnets/commlegacy')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroups_commvm_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddresses_ecommvm_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks_legacycommVNET_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroups_commvm_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('networkSecurityGroups_commvm_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "mysql",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3306",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIPAddresses_ecommvm_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIPAddresses_legacycommVNET_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[toLower(variables('virtualNetworks_legacycommVNET_name'))]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/8"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "commlegacy",
+                        "properties": {
+                            "addressPrefix": "10.1.0.0/16"
+                        }
+                    },
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "10.2.0.0/16"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[variables('storageAccounts_cadcommbot_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {},
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[variables('storageAccounts_ecommfunc_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {},
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "name": "[variables('serverfarms_ecommname')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('serverfarms_ecommname')]",
+                "numberOfWorkers": 0
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 0
+            },
+            "kind": "app",
+            "name": "[variables('serverfarms_CADCommAPIFarm')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+             "name": "[variables('serverfarms_CADCommAPIFarm')]",
+                "numberOfWorkers": 0
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_ecommname'))]"
+            ]
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[variables('sites_commfunc_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('sites_commfunc_name')]",
+                "siteConfig": {
+                   "AlwaysOn": true
+               },
+                "hostNames": [
+                    "[concat(variables('sites_commfunc_name'), '.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('sites_commfunc_name'), '.azurewebsites.net')]",
+                    "[concat(variables('sites_commfunc_name'), '.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('sites_commfunc_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('sites_commfunc_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "resources": [
+                {
+                    "name": "[toLower(variables('virtualNetworks_legacycommVNET_name'))]",
+                    "type": "Microsoft.Web/sites/virtualNetworkConnections",
+                    "apiVersion": "2016-08-01",
+                    "location": "[resourceGroup().location]",
+                    "tags": {},
+                    "properties": {
+                        "vnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks', toLower(variables('virtualNetworks_legacycommVNET_name')))]",
+                        "certBlob": "",
+                        "dnsServers": null
+                    }
+                },
+                {
+                "apiVersion": "2015-08-01",
+                "name": "web",
+                 "type": "sourcecontrols",
+                 "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('sites_commfunc_name'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_ecommfunc_name'))]"
+                ],
+                "properties": {
+                    "RepoUrl": "[parameters('function_repoURL')]",
+                    "branch": "[parameters('function_branch')]",
+                    "IsManualIntegration": true
+                    }
+                }
+            ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_CADCommAPIFarm'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', toLower(variables('virtualNetworks_legacycommVNET_name')))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_CADCommAPIFarm'))]",
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('virtual_network_gateway'))]"
+            ]
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp,botapp",
+            "name": "[variables('sites_CADCommBot_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('sites_CADCommBot_name')]",
+                "hostNames": [
+                    "[concat(variables('sites_CADCommBot_name'), '.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                     "[concat(variables('sites_CADCommBot_name'), '.azurewebsites.net')]",
+                     "[concat(variables('sites_CADCommBot_name'), '.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('sites_CADCommBot_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('sites_CADCommBot_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_ecommname'))]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                         "[resourceId('Microsoft.Web/Sites', variables('sites_CADCommBot_name'))]",
+                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_cadcommbot_name'))]"
+                    ],
+                    "properties": {
+                        "logicAppURL": "Enter your logic app url here"
+                    }
+                }
+                ],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_ecommname'))]"
+            ]
+        },
+        {
+            "comments": "",
+            "type": "Microsoft.Web/sites",
+            "kind": "app",
+            "name": "[variables('sites_commcoffeeapp_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('sites_commcoffeeapp_name')]",
+                "hostNames": [
+                    "[concat(variables('sites_commcoffeeapp_name'), '.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('sites_commcoffeeapp_name'), '.azurewebsites.net')]",
+                    "[concat(variables('sites_commcoffeeapp_name'), '.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('sites_commcoffeeapp_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('sites_commcoffeeapp_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_CADCommAPIFarm'))]"
+                },
+                "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('sites_commcoffeeapp_name'))]"
+                ],
+                "properties": {
+                    "RepoUrl": "[parameters('coffee_repoURL')]",
+                    "branch": "[parameters('coffee_branch')]",
+                    "IsManualIntegration": true,
+                     "logicAppURL": ""
+                    }
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('sites_commcoffeeapp_name'))]"
+                    ],
+                    "properties": {
+                        "javaVersion": "1.8",
+                        "javaContainer": "TOMCAT",
+                        "javaContainerVersion": "8.0"
+                    }
+                }
+                ],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_CADCommAPIFarm'))]"
+            ]
+        }
+    ]
+}

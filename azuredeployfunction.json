@@ -1,0 +1,274 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+         "deploymentName": {
+            "defaultValue": "eCommerce",
+            "type": "string"
+        },
+        "serverfarms_CADCommAPIFarm": {
+            "defaultValue": "CADcommfarm",
+            "type": "string"
+        },
+        "storageAccounts_ecommfunc_name": {
+            "defaultValue": "cfunstor",
+            "type": "string"
+        },
+        "sites_commfunc_name": {
+            "defaultValue": "commSQL",
+            "type": "string"
+        },
+        "serverfarms_ecommname": {
+            "defaultValue": "NorthEuropePlan",
+            "type": "string"
+        },
+        "storageAccounts_cadcommbot_name": {
+            "defaultValue": "cadcommbot",
+            "type": "string"
+        },
+        "sites_CADCommBot_name": {
+            "defaultValue": "CADCommBot3",
+            "type": "string"
+        },
+        "bot_repoURL": {
+            "type": "string",
+            "defaultValue": "https://github.com/shanepeckham/CADCoffeeBot.git",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        },
+        "bot_branch": {
+            "type": "string",
+            "defaultValue": "master",
+            "metadata": {
+                "description": "The branch of the GitHub repository to use."
+            }
+        },
+        "function_repoURL": {
+            "type": "string",
+            "defaultValue": "https://github.com/shanepeckham/CADeCommerceFunction.git",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        },
+        "function_branch": {
+            "type": "string",
+            "defaultValue": "master",
+            "metadata": {
+                "description": "The branch of the GitHub repository to use."
+            }
+        }
+    },
+    "variables": {
+            "serverfarms_CADCommAPIFarm":  "[concat(parameters('serverfarms_CADCommAPIFarm'), uniqueString(parameters('deploymentName')))]",
+            "storageAccounts_ecommfunc_name": "[concat(parameters('storageAccounts_ecommfunc_name'), uniqueString(parameters('deploymentName')))]",
+            "sites_commfunc_name": "[concat(parameters('sites_commfunc_name'), uniqueString(parameters('deploymentName')))]",
+            "serverfarms_ecommname": "[concat(parameters('serverfarms_ecommname'), uniqueString(parameters('deploymentName')))]",
+            "storageAccounts_cadcommbot_name": "[concat(parameters('storageAccounts_cadcommbot_name'), uniqueString(parameters('deploymentName')))]",
+            "sites_CADCommBot_name": "[concat(parameters('sites_CADCommBot_name'), uniqueString(parameters('deploymentName')))]"
+    },
+    "resources": [
+            {
+                "comments": "",
+                "type": "Microsoft.Web/serverfarms",
+                "sku": {
+                    "name": "S1",
+                    "tier": "Standard",
+                    "size": "S1",
+                    "family": "S",
+                    "capacity": 0
+                },
+                "kind": "app",
+                "name": "[variables('serverfarms_CADCommAPIFarm')]",
+                "apiVersion": "2015-08-01",
+                "location": "[resourceGroup().location]",
+                "properties": {
+                "name": "[variables('serverfarms_CADCommAPIFarm')]",
+                    "numberOfWorkers": 0
+                },
+                "resources": [],
+                "dependsOn": [
+                 
+                ]
+            },
+            {
+            "comments": "",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "name": "[variables('serverfarms_ecommname')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('serverfarms_ecommname')]",
+                "numberOfWorkers": 0
+            },
+            "dependsOn": []
+            },
+            {
+            "comments": "",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+                "kind": "Storage",
+                "name": "[variables('storageAccounts_cadcommbot_name')]",
+                "apiVersion": "2016-01-01",
+                "location": "[resourceGroup().location]",
+                "tags": {},
+                "properties": {},
+                "dependsOn": []
+            },
+            {
+            "comments": "",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+                "kind": "Storage",
+                "name": "[variables('storageAccounts_ecommfunc_name')]",
+                "apiVersion": "2016-01-01",
+                "location": "[resourceGroup().location]",
+                "tags": {},
+                "properties": {},
+                "dependsOn": []
+            },
+            {
+            "comments": "",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp,botapp",
+            "name": "[variables('sites_CADCommBot_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('sites_CADCommBot_name')]",
+                "hostNames": [
+                    "[concat(variables('sites_CADCommBot_name'), '.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                     "[concat(variables('sites_CADCommBot_name'), '.azurewebsites.net')]",
+                     "[concat(variables('sites_CADCommBot_name'), '.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('sites_CADCommBot_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('sites_CADCommBot_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_ecommname'))]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                         "[resourceId('Microsoft.Web/Sites', variables('sites_CADCommBot_name'))]",
+                         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_cadcommbot_name'))]"
+                    ],
+                    "properties": {
+                        "logicAppURL": "Enter your logic app url here"
+                    }
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('sites_CADCommBot_name'))]"
+                ],
+                "properties": {
+                    "RepoUrl": "[parameters('bot_repoURL')]",
+                    "branch": "[parameters('bot_branch')]",
+                    "IsManualIntegration": true
+                   }
+                }
+                ],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_ecommname'))]"
+                ]
+            },
+            {
+            "comments": "",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[variables('sites_commfunc_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('sites_commfunc_name')]",
+                "hostNames": [
+                    "[concat(variables('sites_commfunc_name'), '.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(variables('sites_commfunc_name'), '.azurewebsites.net')]",
+                    "[concat(variables('sites_commfunc_name'), '.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('sites_commfunc_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(variables('sites_commfunc_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_CADCommAPIFarm'))]"
+                },
+                "resources": [
+                    {
+                        "apiVersion": "2015-08-01",
+                        "name": "appsettings",
+                        "type": "config",
+                        "dependsOn": [
+                            "[resourceId('Microsoft.Web/Sites', variables('sites_commfunc_name'))]",
+                            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_ecommfunc_name'))]"
+                        ],
+                    "properties": {
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccounts_ecommfunc_name'), ';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_ecommfunc_name')), '2015-05-01-preview').key1,';')]", 
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccounts_ecommfunc_name'), ';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_ecommfunc_name')), '2015-05-01-preview').key1,';')]", 
+                        "FUNCTIONS_EXTENSION_VERSION": "latest"
+                        }
+                },
+                {
+                "apiVersion": "2015-08-01",
+                "name": "web",
+                 "type": "sourcecontrols",
+                 "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('sites_commfunc_name'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_ecommfunc_name'))]"
+                ],
+                "properties": {
+                    "RepoUrl": "[parameters('function_repoURL')]",
+                    "branch": "[parameters('function_branch')]",
+                    "IsManualIntegration": true
+                    }
+                }
+                ],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('serverfarms_CADCommAPIFarm'))]"
+            ]
+        }
+   ]
+}
