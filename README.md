@@ -427,6 +427,24 @@ Note, the Logic App designer will state that the json is invalid while the code 
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/parseJson.png)
 
+Now we want to call our Serverless proxy - method 'AddNewCustomerOrder', see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/neworder.png)
+
+And if our schema is good then all we have to do is pass it the Body of the Parse Json step, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/parsebody.png)
+
+This will now register the user in our database alongside their preferred language for future communication. Why don't we send them a confirmation of their order in the preferred language? To do this search for 'Translate' and add the 'Microsoft Translator - Translate Text' connector, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/translate.png)
+
+Now as inputs you want to send it the preferredLanguage contents again and the target language. 
+
+
+
+
+
 
 
 
