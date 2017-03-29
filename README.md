@@ -45,24 +45,24 @@ The following technology components are used in this solution:
 
 # The Lab component
 
-This solution will install and configure all of the components required to build the end to end Loyalty scenario. The Lab attendees just need to wire everything together in a Logic App. 
+This solution will install and configure all of the components required to build the end to end Personalisation scenario. The Lab attendees just need to apply a few configuration changes and wire everything together in a Logic App. 
 
 # Preparing for the solution
 
 For this Lab you will require:
 * A cognitive services trial account key, get it here - https://www.microsoft.com/cognitive-services/en-us/sign-up
 * A Gmail account for sending emails, get it here - https://accounts.google.com/SignUp?service=mail&continue=http%3A%2F%2Fmail.google.com%2Fmail%2Fe-11-14a952576b5f2ffe90ec0dd9823744e0-46a962fbb7947b68059374ddde7f29b5490a6b4d
-* Install Postman, get it here - https://www.getpostman.com
+* Install Postman for REST API troubleshooting, get it here - https://www.getpostman.com
 * If using Windows 10 get Bash for Windows - https://msdn.microsoft.com/en-us/commandline/wsl/install_guide or putty if on an older version - http://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
 
 # How to install the solution
 
 ## 1. Provisioning the components: Select Deploy to Azure to deploy to your Azure instance that you are currently logged in to.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fshanepeckham%2FCADHackathon_Loyalty%2Fmaster%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fshanepeckham%2FCADScenario_Personalisation%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fshanepeckham%2FCADHackathon_Loyaltys%2Fmaster%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fshanepeckham%2FCADScenario_Personalisation%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
