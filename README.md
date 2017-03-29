@@ -405,7 +405,7 @@ We can generate a json schema online - I have used https://jsonschema.net/#/edit
   "type": "object"
 }
 ```
-Now comes the tricky bit, we will need to go into the code view to go and formulate the json manually so that we can populate this schema from our Request Body and Detect Language outputs. My code view for this step looks like this:
+Now comes the tricky bit, we will need to go into the code view to go and formulate the json manually so that we can populate this schema from our Request Body and Detect Language outputs. My code view for this step looks like this (you might want to copy this if string manipulation makes you go cross-eyed):
 ```
             "Parse_JSON": {
                 "inputs": {
@@ -421,7 +421,11 @@ Now comes the tricky bit, we will need to go into the code view to go and formul
             },
 ```
 
+You can now run another test to see if your parse json conforms to the schema. Once it does you are ready to now pass the new json message to the Serverless proxy to pass to the legacy database. 
 
+Note, the Logic App designer will state that the json is invalid while the code view will think it is valid, it this happens ensure that you always click save in the code view whenever you make a change! See below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/parseJson.png)
 
 
 
