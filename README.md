@@ -351,7 +351,87 @@ Search for the word 'Detect', this should return the option to select the 'Text 
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/detectlang.png)
 
+Now we want to pass the value of the preferredLanguage field into the Text input field of this connector. To do this place your cursor inside the Text field and you should see the dynamic content popup appear on the right. Select the 'Body' option, but this will send all field values to the connector whereas we only want 'preferredLanguage'. Open up the code view and amend the json from:
+```
+"text": "@{triggerBody()}"
+```
+to
+```
+ "text": "@{triggerBody()['preferredLanguage']}"
+ ```
+Click Save. We are now using json dot notation to select the field we want. You can now test your Logic App via the chat bot and see if this works. Greet your bot and order another coffee, see below:
 
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/logicdetect.png)
+
+We can see that we keep getting an 'undefined' message in our chat bot - it is expecting a response, so let's go add the output from the Detect Language step to the Response step, see below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/detectresp.png)
+
+We can now use this to send a response to our bot, but we now have a json request from the bot, and a json response from the Detect Language connector. Our Serverless proxy is looking for json representing both of these outputs. Here we will do some merging and parsing of these two json messages.
+
+Add an action after the Detect Language step, we want to look for the 'Data Operations - Parse json' connector. We need a schema to represent the fields the Serverless proxy requires, namely:
+
+```
+{   "emailAddress": "bobby@turtlenecksweater.com",
+    "preferredLanguage": "French",
+    "product": "Latte",
+    "total", "$3,45"
+}
+```
+We can generate a json schema online - I have used https://jsonschema.net/#/editor which has generated the following schema I can use:
+```
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "emailAddress": {
+      "type": "string"
+    },
+    "preferredLanguage": {
+      "type": "string"
+    },
+    "product": {
+      "type": "string"
+    },
+    "total": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "emailAddress",
+    "total",
+    "product",
+    "preferredLanguage"
+  ],
+  "type": "object"
+}
+```
+Now comes the tricky bit, we will need to go into the code view to go and formulate the json manually so that we can populate this schema from our Request Body and Detect Language outputs. My code view for this step looks like this:
+```
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "{'emailAddress': '@{triggerBody()['emailAddress']}' , 'product': '@{triggerBody()['coffeeType']}' , 'total': '@{triggerBody()['total']}' , 'preferredLanguage': '@{body('Detect_Language')?['detectedLanguages'][0]['name']}'}",
+                    "schema": {}
+                },
+                "runAfter": {
+                    "Detect_Language": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+```
+
+
+
+
+
+
+
+
+
+
+ 
+ 
 
 
 
