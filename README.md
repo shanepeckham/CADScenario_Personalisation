@@ -70,10 +70,6 @@ Select or create a Resource Group to deploy to and the only parameter you need t
 
 Note, you can always get the parameters for a deployment by clicking on Resource Groups --> [Resource Group] --> Deployments --> [Deployment] - here you can see status and parameters.
 
-See the image below:
-
-![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/deployParams1.png)
-
 This will take roughly 30 minutes as this will provision:
 
 * Two VNETs
@@ -92,7 +88,9 @@ This will take roughly 30 minutes as this will provision:
 
 Make sure you have the same Deployment Name as for the first deploy and ensure you deploy to the same resource group, see image below:
 
-![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/deployParams2.png)
+See the image below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/deployParams1.png)
 
 This will take roughly 5 minutes as this will:
 
