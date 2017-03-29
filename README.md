@@ -66,20 +66,41 @@ For this Lab you will require:
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
-Select or create a Resource Group to deploy to and the only parameter you need to change is the Deployment Name - give it any name of 12 characters or less as it will be used to generate a hash to ensure your site names are unique, see the image below:
+Select or create a Resource Group to deploy to and the only parameter you need to change is the Deployment Name - give it any name of 12 characters or less as it will be used to generate a hash to ensure your site names are unique. Make a note of the Deployment Name and Resource Group you have deployed to as we will need them again. 
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/deploymentname.png)
+Note, you can always get the parameters for a deployment by clicking on Resource Groups --> [Resource Group] --> Deployments --> [Deployment] - here you can see status and parameters.
+
+See the image below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/deployParams1.png)
 
 This will take roughly 30 minutes as this will provision:
 
 * Two VNETs
+* A virtual network Gateway
 * An Ubuntu VM and place in inside the VNET isolated with NSGs
-* An API Management instance (Developer Tier) and place it inside a subnet within the VNET
-* An App Service API app (Contact List) and deploy a node.js Swagger enabled API to it
-* An App Service serverless function with dynamic scaling and pricing
-* Storage accounts to house the VM VHD, the Function logging and the App Service API logging
+* A Bot Service chat bot running on App Services
+* An App Service Web app (eCommerce site) and deploy a Java shopping experience on it
+* An App Service serverless function as part of a App Service plan so that it can be connected to the virtual network Gateway
+* Storage accounts to house the VM VHD, the Function logging and the App Service logging
 
-## 2. Checking the Contact List API App: Once deployment is complete, navigate to your App Service API App, its default name will be CADAPIMasterSite[hash] and click on the URI in the overview blade, see below:
+## 2. Now we will deploy the Serverless proxy code and the Bot Service code - Select Deploy to Azure
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fshanepeckham%2FCADScenario_Personalisation%2Fmaster%2Fazuredeployfunction.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
+Make sure you have the same Deployment Name as for the first deploy and ensure you deploy to the same resource group, see image below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/deployParams2.png)
+
+This will take roughly 5 minutes as this will:
+
+* Deploy a number node.js functions to connect directly to a remote mysql instance
+* A node.js chat bot shopping experience
+
+
+## 3. Checking the Contact List API App: Once deployment is complete, navigate to your App Service API App, its default name will be CADAPIMasterSite[hash] and click on the URI in the overview blade, see below:
 
 ![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/App_URI.png)
 
