@@ -467,7 +467,7 @@ The problem is that the Target language is expecting the language ISO code, we c
                     "path": "/Translate",
                     "queries": {
                         "languageTo": "@{body('Detect_Language')?['detectedLanguages'][0]['iso6391Name']}",
-                        "query": "\"query\": \"Thank you for shopping at our coffee store. Your last order was a @{body('Parse_JSON')['product']} and your preferred language is @{body('Parse_JSON')['preferredLanguage']}\""
+                        "query": "Thank you for shopping at our coffee store. Your last order was a @{body('Parse_JSON')['product']} and your preferred language is @{body('Parse_JSON')['preferredLanguage']}\""
                     }
                 },
                 "runAfter": {
