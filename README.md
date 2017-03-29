@@ -209,7 +209,7 @@ This will open a new page and start up your Java eCommerce site. Have a look aro
 
 See below:
 
-![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webcoffee1.png)
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webcoffee2.png)
 
 ## 6. Activate the Bot Service and check the code has deployed
 
