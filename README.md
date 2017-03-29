@@ -528,7 +528,7 @@ select * from orders;
 
 Check the email:
 
-![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/full2.png)
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/full3.png)
 
 ### Full logic app code
 ```
