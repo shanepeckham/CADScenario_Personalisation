@@ -32,7 +32,8 @@ This solution will allow a customer to place an order for a coffee in a multi-ch
 
 The following technology components are used in this solution:
 
-*	eCommerce online store built with Java running on Azure App Services (PaaS)
+*	Bot Service running on App Service (PaaS)
+*   eCommerce online store built with Java running on Azure App Services (PaaS)
 *	Ubuntu running a legacy mysql database (IaaS) 
 *	Azure networking to isolate legacy workloads (IaaS)
 *   Azure virtual network Gateway to provide point to site connectivity
