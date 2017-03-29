@@ -272,7 +272,7 @@ Both the website and the chat bot will take a customer order and provide us with
 ```
 ### Registering a Logic App endpoint with the website and the chat bot
 
-Create a new Logic App within your Resource Group, click Edit.
+Create a new Logic App within your Resource Group and in the same location as your other components.
 
 The first thing we want to do is create a HTTP Request-Response Step, click save - you will receive an endpoint upon save - copy this value, see below:
 
@@ -286,53 +286,93 @@ Now click Save and copy the endpoint
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/copylogicurl.png)
 
+Navigate back to your Resource Group and select your provisioned eCommerce website, it will have a default name of commcoffee[hash]. Select 'Application Settings' and scroll down to 'App Settings' section, add a key with the following value:
 
+```
+logicAppURL
+```
+Next add your Logic App endpoint that you copied into the value field, see below:
 
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/logicapp1.png)
 
-Select the Request step, see below:
+Click Save. Click on 'Overview' and press the 'Restart' button. See below:
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/Request.png)
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/restartwebapp.png)
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/httprequest.png)
+#### Now we can test the Web app <--> Logic App connectivity
 
-Once you save the Logic app you will get and endpoint, you can now invoke your logic app with Postman - add the URL and select POST. Ensure you have set the Header "Content-Type" with value "application/json". Select body, select "raw" and enter the follow value for your body content:
+Navigate to your web site, select 'Order now' on your coffee of choice, enter an email address and select 'Place Order'. An Order Confirmation message will be displayed on your website. Now we can navigate to the Logic App to see if our web site sent it a request - all triggered runs history can be seen in the 'Overview' section. See below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/logicapprun.png)
+
+You should see a succeeded run which you can drill own to see the inputs, confirm these match what you ordered.
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/webapprun2.png)
+
+You should see the values we sent in the Request Body:
 ```
 {
-  "APIMKey": "[Your APIM Key goes here]",
-  "id": 1
+  "coffeeType": "Espresso",
+  "total": "3.75",
+  "emailAddress": "bobby@turtlenecksweater.com",
+  "preferredLanguage": "Hello there"
 }
 ```
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/postmanheaders.png)
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/postmanbody.png)
+Note: The website is hard coded to send "Hello there" for every order, you can add a field to capture customer comments to the website, we will instead focus on the chat bot as our primary ordering system.
 
-Now add a step to include an API Management API - select your API "Contact List API". You will want to select the method GET for contacts/{id}
+#### Now we can setup and test the chatbot app <--> Logic App connectivity
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/contactsstep1.png)
+Navigate back to your Resource Group and select your provisioned Bot Service App Service App, it will have a default name of commcombot3[hash]. Click on Settings in the top menu, see below:
 
-![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/contactsstep2.png)
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botsettings.png)
 
-You will need to navigate to the code view to be able to select the json fields that will be posted as part of the body. Note, you can select the values you are posting in the body using javascript object notation. 
+Click on 'Open' in the 'Application Settings' section, see below:
 
-Your code view should look like this:
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botappsettings.png)
+
+You will now be presented with a similar settings screen as with the website, enter a key again with the following value:
+
 ```
-            "QueryContactsById": {
-                "inputs": {
-                    "api": {
-                        "id": "/subscriptions/1b987fd6-b38e-40a1-bca8-4f67e6272c12/resourceGroups/[ResourceGroup]/providers/Microsoft.ApiManagement/service/cadapimxdb3o43h6p7bq/apis/58cd4c45dc78ac0f84da1287"
-                    },
-                    "method": "get",
-                    "pathTemplate": {
-                        "parameters": {
-                            "id": "@{encodeURIComponent(triggerBody()['id'])}"
-                        },
-                        "template": "/Contacts/contacts/{id}"
-                    },
-                    "subscriptionKey": "@{triggerBody()['APIMKey']}"
-                },
-                "runAfter": {},
-                "type": "ApiManagement"
-            }
+logicAppURL
 ```
+Next add your Logic App endpoint that you copied into the value field and click Save. You do not need to restart the Bot app. Now in the box that says 'Type your message' enter some text in a language of your choice. You will be prompted for a few answers, enter them and after your order has been confirmed you should see a response as below:
+
+![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/botint1.png)
+
+Now we can navigate to the Logic App to see if our chat bot sent it a request - go back to the Runs History in the 'Overview' section. Inspect the Request Body again - you should now have your chat bot and your web site set up to interact directly with the Logic App. Note: The 'preferredLanguage' value in your Request Body will now hold the first value to entered in the chat bot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Navigating back to the designer should show your values resolved like below:
 
 ![alt text](https://github.com/shanepeckham/CADLab_Loyalty/blob/master/Images/querycontactsbyid.png)
