@@ -122,7 +122,7 @@ We will now ssh onto the machine using Bash for Windows on Windows 10, or putty 
 * Now type ``` bash installVM.sh ```
 * Upon completion you will see a screen similar to that below, with the final status 'Active Internet Connections'
 
-Here you will now see that our legacy database is running IP 10.1.0.4 port 3306 within our VNET. 
+Here you will now see that our legacy database is running on IP 10.1.0.4 port 3306 within our VNET. 
 
 ![alt text](https://github.com/shanepeckham/CADScenario_Personalisation/blob/master/images/netstat.png)
 
